@@ -1,0 +1,74 @@
+/* ===== LOGIN PAGE ===== */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f4f8; 
+  padding: 20px;
+}
+
+.login-box {
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  display: flex;
+  flex-direction: column; 
+  gap: 20px; 
+}
+
+.login-title {
+  font-size: 28px;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0; /* remove extra margin */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* spacing between input fields and button */
+}
+
+.login-form input {
+  padding: 12px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.login-form input:focus {
+  border-color: #1e293b;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #1e293b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 20px;
+  }
+  .login-title {
+    font-size: 24px;
+  }
+}

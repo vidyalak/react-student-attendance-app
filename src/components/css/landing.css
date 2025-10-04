@@ -1,0 +1,118 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.navbar {
+  background-color: #1e293b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.navbar-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 24px;
+}
+
+
+.navbar-menu li {
+  list-style: none;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.navbar-menu li:hover {
+  color: #facc15;
+}
+
+/* Landing */
+.landing {
+  text-align: center;
+  padding: 40px 16px;
+}
+
+.landing h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.landing p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #4b5563;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.landing button {
+  margin-top: 20px;
+  padding: 10px 24px;
+  background-color: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.landing button:hover {
+  background-color: #1e293b;
+}
+
+.footer {
+  background-color: #1e293b;
+  color: white;
+  padding: 16px 0;
+  text-align: center;
+  width: 100%;
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.footer-links a {
+  color: white;          
+  text-decoration: none; 
+}
+
+.footer-links a:hover {
+  color: #facc15;        
+}
+
+.navbar-menu li .nav-link {
+  color: white;     
+  text-decoration: none; 
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.navbar-menu li .nav-link:hover {
+  color: #facc15; 
+}
