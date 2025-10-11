@@ -17,7 +17,7 @@ function Register() {
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [showPopup, setShowPopup] = useState(false); // success popup
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,30 +32,32 @@ function Register() {
       return;
     }
 
+    if (!formData.userRole) {
+      setError("User role is required!");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:8080/api/login/register",
-        formData
+        formData,
+        {
+          // Accept all status codes as valid so we handle them in then
+          validateStatus: () => true,
+        }
       );
 
+      const { status, message } = response.data;
+
       if (response.status === 200) {
-        // Show success popup
         setShowPopup(true);
+      } else if (response.status === 400) {
+        setError(response.data);
+      } else {
+        setError("Unexpected server response.");
       }
     } catch (error) {
-      if (error.response) {
-        const msg = error.response.data?.message || "";
-
-        if (msg.includes("Username already exists!")) {
-          setError("Username already exists!");
-        } else if (msg.includes("email")) {
-          setError("Email already exist!");
-        } else {
-          setError("Registration failed. Please try again.");
-        }
-      } else {
-        setError("Unable to connect to the server.");
-      }
+      setError("Unable to connect to the server.");
     }
   };
 
@@ -123,7 +125,6 @@ function Register() {
             required
           />
 
-          {/* Redesigned Role Dropdown */}
           <div className="custom-dropdown">
             <select
               name="userRole"
@@ -148,7 +149,7 @@ function Register() {
 
         <p className="redirect-text">
           Already have an account?{" "}
-          <span className="redirect-link" onClick={() => navigate("/")}>
+          <span className="redirect-link" onClick={() => navigate("/login")}>
             Login here
           </span>
         </p>
