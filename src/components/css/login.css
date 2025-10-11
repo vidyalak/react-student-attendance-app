@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f0f4f8; 
+  background: #f0f4f8;
   padding: 20px;
 }
 
@@ -16,8 +16,8 @@
   max-width: 400px;
   text-align: center;
   display: flex;
-  flex-direction: column; 
-  gap: 20px; 
+  flex-direction: column;
+  gap: 20px;
 }
 
 .login-title {
@@ -71,4 +71,27 @@
   .login-title {
     font-size: 24px;
   }
+}
+
+.login-links {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.link-text {
+  color: #555;
+  font-size: 14px;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+.redirect-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.redirect-link:hover,
+.link-text:hover {
+  color: #0056b3;
 }
