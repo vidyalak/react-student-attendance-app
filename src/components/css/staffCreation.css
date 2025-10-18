@@ -1,0 +1,171 @@
+.staff-form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
+.staff-form-container {
+  width: 85%;
+  max-width: 360px; /* slightly smaller for better fit */
+  padding: 20px 25px; /* slightly reduced padding */
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  margin-top: -45px;
+}
+
+.staff-form-title {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.3rem; /* slightly smaller */
+  color: #4b3ca7;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 12px; /* slightly reduced spacing */
+}
+
+label {
+  font-size: 0.95rem; /* smaller to fit */
+  color: #6c63ff;
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.4px;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+input {
+  width: 94%;
+  padding: 7px 10px; /* slightly reduced padding */
+  font-size: 0.9rem; /* smaller to fit */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: "Roboto", sans-serif;
+  background: #fefefe;
+}
+
+input:focus {
+  border-color: #6c63ff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(108, 99, 255, 0.3);
+}
+
+.readonly {
+  background-color: #f5f5f5;
+}
+
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #6c63ff, #8f7fff);
+  color: white;
+  padding: 9px; /* slightly smaller */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem; /* slightly smaller */
+  font-weight: 700;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(90deg, #5a52e0, #7f70ff);
+  transform: scale(1.03);
+}
+
+@media (max-width: 480px) {
+  .staff-form-container {
+    padding: 15px;
+    max-width: 92%;
+  }
+
+  input {
+    font-size: 0.85rem;
+    padding: 5px 8px;
+  }
+
+  .staff-form-title {
+    font-size: 1.4rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+}
+/* Popup overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Popup box */
+.popup-box {
+  background: #ffffff;
+  padding: 30px 50px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: popUp 0.3s ease;
+}
+
+/* Tick mark */
+.tick-mark {
+  font-size: 50px;
+  color: #28a745;
+  animation: scaleUp 0.4s ease-in-out;
+}
+
+.popup-box p {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes popUp {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
