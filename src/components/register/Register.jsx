@@ -5,7 +5,6 @@ import "../css/register.css";
 
 function Register() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     userName: "",
     passWord: "",
@@ -41,13 +40,8 @@ function Register() {
       const response = await axios.post(
         "http://localhost:8080/api/login/register",
         formData,
-        {
-          // Accept all status codes as valid so we handle them in then
-          validateStatus: () => true,
-        }
+        { validateStatus: () => true }
       );
-
-      const { status, message } = response.data;
 
       if (response.status === 200) {
         setShowPopup(true);
@@ -67,83 +61,112 @@ function Register() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-title">Register</h2>
+    <div className="register-container">
+      <div className="register-card">
+        <div className="register-header">
+          <h2 className="register-title">Create Account 📝</h2>
+          <p className="register-subtitle">Fill in your details to register</p>
+        </div>
 
-        <form className="login-form" onSubmit={handleRegister}>
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
+       <form className="register-form" onSubmit={handleRegister}>
+  {/* First Name */}
+  <div className="input-group">
+    <input
+      type="text"
+      name="firstName"
+      value={formData.firstName}
+      onChange={handleChange}
+      required
+      placeholder=" "  // same as First Name
+    />
+    <label>First Name</label>
+  </div>
 
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
+  {/* Last Name */}
+  <div className="input-group">
+    <input
+      type="text"
+      name="lastName"
+      value={formData.lastName}
+      onChange={handleChange}
+      required
+      placeholder=" "
+    />
+    <label>Last Name</label>
+  </div>
 
-          <input
-            type="email"
-            name="userEmail"
-            placeholder="Email Address"
-            value={formData.userEmail}
-            onChange={handleChange}
-            required
-          />
+  {/* Email */}
+  <div className="input-group">
+    <input
+      type="email"
+      name="userEmail"
+      value={formData.userEmail}
+      onChange={handleChange}
+      required
+      placeholder=" "
+    />
+    <label>Email Address</label>
+  </div>
 
-          <input
-            type="text"
-            name="userName"
-            placeholder="Username"
-            value={formData.userName}
-            onChange={handleChange}
-            required
-          />
+  {/* Username */}
+  <div className="input-group">
+    <input
+      type="text"
+      name="userName"
+      value={formData.userName}
+      onChange={handleChange}
+      required
+      placeholder=" "
+    />
+    <label>Username</label>
+  </div>
 
-          <input
-            type="password"
-            name="passWord"
-            placeholder="Password"
-            value={formData.passWord}
-            onChange={handleChange}
-            required
-          />
+  {/* Password */}
+  <div className="input-group">
+    <input
+      type="password"
+      name="passWord"
+      value={formData.passWord}
+      onChange={handleChange}
+      required
+      placeholder=" "
+    />
+    <label>Password</label>
+  </div>
 
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+  {/* Confirm Password */}
+  <div className="input-group">
+    <input
+      type="password"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      required
+      placeholder=" "
+    />
+    <label>Confirm Password</label>
+  </div>
 
-          <div className="custom-dropdown">
-            <select
-              name="userRole"
-              value={formData.userRole}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="Admin">👑 Admin</option>
-              <option value="Author">✍️ Author</option>
-              <option value="Content Reviewer">🕵️ Content Reviewer</option>
-              <option value="Retailer">🏪 Retailer</option>
-            </select>
-          </div>
+  {/* Select Role */}
+  <div className="input-group select-role-userRole">
+    <select
+      name="userRole"
+      value={formData.userRole}
+      onChange={handleChange}
+      required
+    >
+      <option value="">Select Role</option>
+      <option value="Admin">👑 Admin</option>
+      <option value="Author">✍️ Author</option>
+      <option value="Content Reviewer">🕵️ Content Reviewer</option>
+      <option value="Retailer">🏪 Retailer</option>
+    </select>
+    <label>Select Role</label>
+  </div>
 
-          <button type="submit" className="login-btn">
-            Register
-          </button>
-        </form>
+  <button type="submit" className="register-btn">
+    Register
+  </button>
+</form>
 
         {error && <p className="error-message">{error}</p>}
 

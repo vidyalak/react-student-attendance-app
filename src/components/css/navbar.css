@@ -1,0 +1,137 @@
+/* Navbar Container */
+.navbar {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.8rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Inner Wrapper */
+.navbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Title */
+.navbar-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Menu List */
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* Menu Links */
+.nav-link {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Hover Animation */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Login Button */
+.login-btn {
+  background-color: #fff;
+  color: #4e54c8;
+  padding: 6px 18px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.login-btn:hover {
+  background-color: #4e54c8;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .navbar-inner {
+    width: 95%;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-inner {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-menu {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    display: none;
+  }
+
+  .navbar-menu.active {
+    display: flex;
+  }
+
+  .login-btn {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-title {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .navbar-menu {
+    gap: 0.8rem;
+  }
+}
