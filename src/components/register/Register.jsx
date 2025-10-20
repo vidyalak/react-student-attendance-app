@@ -68,105 +68,103 @@ function Register() {
           <p className="register-subtitle">Fill in your details to register</p>
         </div>
 
-       <form className="register-form" onSubmit={handleRegister}>
-  {/* First Name */}
-  <div className="input-group">
-    <input
-      type="text"
-      name="firstName"
-      value={formData.firstName}
-      onChange={handleChange}
-      required
-      placeholder=" "  // same as First Name
-    />
-    <label>First Name</label>
-  </div>
+        <form className="register-form" onSubmit={handleRegister}>
+          {/* First Name */}
+          <div className="input-group">
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+              placeholder=" " // same as First Name
+            />
+            <label>First Name</label>
+          </div>
 
-  {/* Last Name */}
-  <div className="input-group">
-    <input
-      type="text"
-      name="lastName"
-      value={formData.lastName}
-      onChange={handleChange}
-      required
-      placeholder=" "
-    />
-    <label>Last Name</label>
-  </div>
+          {/* Last Name */}
+          <div className="input-group">
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Last Name</label>
+          </div>
 
-  {/* Email */}
-  <div className="input-group">
-    <input
-      type="email"
-      name="userEmail"
-      value={formData.userEmail}
-      onChange={handleChange}
-      required
-      placeholder=" "
-    />
-    <label>Email Address</label>
-  </div>
+          {/* Email */}
+          <div className="input-group">
+            <input
+              type="email"
+              name="userEmail"
+              value={formData.userEmail}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Email Address</label>
+          </div>
 
-  {/* Username */}
-  <div className="input-group">
-    <input
-      type="text"
-      name="userName"
-      value={formData.userName}
-      onChange={handleChange}
-      required
-      placeholder=" "
-    />
-    <label>Username</label>
-  </div>
+          {/* Username */}
+          <div className="input-group">
+            <input
+              type="text"
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Username</label>
+          </div>
 
-  {/* Password */}
-  <div className="input-group">
-    <input
-      type="password"
-      name="passWord"
-      value={formData.passWord}
-      onChange={handleChange}
-      required
-      placeholder=" "
-    />
-    <label>Password</label>
-  </div>
+          {/* Password */}
+          <div className="input-group">
+            <input
+              type="password"
+              name="passWord"
+              value={formData.passWord}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
+            <label>Password</label>
+          </div>
 
-  {/* Confirm Password */}
-  <div className="input-group">
-    <input
-      type="password"
-      value={confirmPassword}
-      onChange={(e) => setConfirmPassword(e.target.value)}
-      required
-      placeholder=" "
-    />
-    <label>Confirm Password</label>
-  </div>
+          {/* Confirm Password */}
+          <div className="input-group">
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder=" "
+            />
+            <label>Confirm Password</label>
+          </div>
 
-  {/* Select Role */}
-  <div className="input-group select-role-userRole">
-    <select
-      name="userRole"
-      value={formData.userRole}
-      onChange={handleChange}
-      required
-    >
-      <option value="">Select Role</option>
-      <option value="Admin">👑 Admin</option>
-      <option value="Author">✍️ Author</option>
-      <option value="Content Reviewer">🕵️ Content Reviewer</option>
-      <option value="Retailer">🏪 Retailer</option>
-    </select>
-    <label>Select Role</label>
-  </div>
+          {/* Select Role */}
+          <div className="input-group select-role-userRole">
+            <select
+              name="userRole"
+              value={formData.userRole}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="ADMIN">👑 Admin</option>
+              <option value="NORMALUSER">🕵️ User</option>
+            </select>
+            <label>Select Role</label>
+          </div>
 
-  <button type="submit" className="register-btn">
-    Register
-  </button>
-</form>
+          <button type="submit" className="register-btn">
+            Register
+          </button>
+        </form>
 
         {error && <p className="error-message">{error}</p>}
 

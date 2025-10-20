@@ -215,3 +215,79 @@
     width: 100px;
   }
 }
+/* Filters */
+.stafflist-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 25px;
+  justify-content: space-between;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.action-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-btn {
+  background: #007bff;
+  color: white;
+}
+
+.search-btn:hover {
+  background: #0069d9;
+}
+
+.filter-btn {
+  background: #28a745;
+  color: white;
+}
+
+.filter-btn:hover {
+  background: #218838;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.stafflist-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stafflist-table th,
+.stafflist-table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+}
+
+.status.present {
+  color: green;
+  font-weight: 600;
+}
+
+.status.onduty {
+  color: orange;
+  font-weight: 600;
+}
+
+

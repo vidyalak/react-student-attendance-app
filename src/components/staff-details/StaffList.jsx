@@ -1,99 +1,146 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/staffList.css";
 
 function StaffList() {
-  const [staffList] = useState([
-    {
-      staffNo: "ST0908",
-      name: "Vidyalakshmi",
-      dept: "Information Technology",
-      phone: "8902345678",
-      date: "2025-10-18",
-      attendance: "On Duty",
-      staffEvent: "Sports Day",
-    },
-    {
-      staffNo: "ST0909",
-      name: "PrasannaVenkatesh",
-      dept: "Information Technology",
-      phone: "8902345678",
-      date: "2025-10-18",
-      attendance: "Present",
-      staffEvent: "Cricket Ground",
-    },
-  ]);
+  const [staffList, setStaffList] = useState([]);
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `http://localhost:8080/staff/all?page=${page}&size=${size}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch staff data");
+        const data = await response.json();
+        setStaffList(data.content);
+        setTotalPages(data.totalPages);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStaffData();
+  }, [page, size]);
+
+  const handlePrev = () => page > 0 && setPage(page - 1);
+  const handleNext = () => page < totalPages - 1 && setPage(page + 1);
 
   return (
     <div className="stafflist-page">
       <div className="stafflist-card">
         <h2 className="stafflist-title">👨‍🏫 Staff List</h2>
 
-        {/* Filters */}
+        {/* Filters Section */}
         <div className="stafflist-filters">
-          <input type="text" placeholder="Search by Staff No..." />
-          <input type="date" />
-          <div className="filter-buttons">
-            <button className="search-btn">🔍 Search</button>
-            <button className="filter-btn">📅 Filter</button>
+          <div className="filter-group">
+            <input
+              type="text"
+              className="filter-input"
+              placeholder="Search by Staff..."
+            />
+            <button className="action-btn search-btn">🔍 Search</button>
+          </div>
+
+          <div className="filter-group">
+            <input type="date" className="filter-input" />
+            <button className="action-btn filter-btn">📅 Filter</button>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Table Section */}
         <div className="table-responsive">
-          <table className="stafflist-table">
-            <thead>
-              <tr>
-                <th>Staff No</th>
-                <th>Name</th>
-                <th>Dept</th>
-                <th>Phone</th>
-                <th>Date</th>
-                <th>Attendance</th>
-                <th>Actions</th>
-                <th>Update Event</th>
-                <th>Staff Event</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staffList.map((staff, index) => (
-                <tr key={index}>
-                  <td>{staff.staffNo}</td>
-                  <td>{staff.name}</td>
-                  <td>{staff.dept}</td>
-                  <td>{staff.phone}</td>
-                  <td>{staff.date}</td>
-                  <td>
-                    <span
-                      className={`status ${
-                        staff.attendance === "Present" ? "present" : "onduty"
-                      }`}
-                    >
-                      {staff.attendance}
-                    </span>
-                  </td>
-                  <td className="actions">
-                    <button className="action-btn approve" title="Approve">✔</button>
-                    <button className="action-btn delete" title="Delete">✖</button>
-                    <button className="action-btn star" title="Mark Important">★</button>
-                  </td>
-                  <td>
-                    <div className="update-form">
-                      <input type="text" placeholder="Enter Program" />
-                      <button className="submit-btn">Submit</button>
-                    </div>
-                  </td>
-                  <td>{staff.staffEvent}</td>
+          {loading ? (
+            <p>Loading staff data...</p>
+          ) : error ? (
+            <p className="error">{error}</p>
+          ) : (
+            <table className="stafflist-table">
+              <thead>
+                <tr>
+                  <th>Staff No</th>
+                  <th>Name</th>
+                  <th>Dept</th>
+                  <th>Phone</th>
+                  <th>Date</th>
+                  <th>Attendance</th>
+                  <th>Actions</th>
+                  <th>Update Event</th>
+                  <th>Staff Event</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {staffList.length > 0 ? (
+                  staffList.map((staff, index) => (
+                    <tr key={index}>
+                      <td>{staff.staffNo}</td>
+                      <td>{staff.staffName}</td>
+                      <td>{staff.staffDeptName}</td>
+                      <td>{staff.staffPhNo}</td>
+                      <td>{staff.dateOfRecord || "-"}</td>
+                      <td>
+                        <span
+                          className={`status ${
+                            staff.staffAttendance === "Present"
+                              ? "present"
+                              : "onduty"
+                          }`}
+                        >
+                          {staff.staffAttendance}
+                        </span>
+                      </td>
+                      <td className="actions">
+                        <button className="action-btn approve" title="Approve">
+                          ✔
+                        </button>
+                        <button className="action-btn delete" title="Delete">
+                          ✖
+                        </button>
+                        <button
+                          className="action-btn star"
+                          title="Mark Important"
+                        >
+                          ★
+                        </button>
+                      </td>
+                      <td>
+                        <div className="update-form">
+                          <input type="text" placeholder="Enter Program" />
+                          <button className="submit-btn">Submit</button>
+                        </div>
+                      </td>
+                      <td>{staff.staffProgram || "-"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="no-data">
+                      No staff records found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Pagination */}
         <div className="pagination">
-          <button disabled>Prev</button>
-          <span>Page 1 of 1</span>
-          <button disabled>Next</button>
+          <button onClick={handlePrev} disabled={page === 0}>
+            Prev
+          </button>
+          <span>
+            Page {page + 1} of {totalPages}
+          </span>
+          <button onClick={handleNext} disabled={page >= totalPages - 1}>
+            Next
+          </button>
         </div>
 
         {/* Export */}
