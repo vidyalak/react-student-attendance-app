@@ -34,11 +34,10 @@ function StaffCreation() {
         const result = await response.json();
         console.log("✅ Staff Saved:", result);
 
-        // Show popup for 2 seconds
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2000);
 
-        // Clear form
+        // Reset form
         setStaffData({
           staffNo: "",
           staffName: "",
@@ -112,17 +111,22 @@ function StaffCreation() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Attendance</label>
-            <input
-              type="text"
-              name="staffAttendance"
-              value={staffData.staffAttendance}
-              onChange={handleChange}
-              placeholder="Enter attendance"
-              required
-            />
-          </div>
+  <div className="form-group">
+  <label htmlFor="staffAttendance">Attendance</label>
+  <select
+    id="staffAttendance"
+    name="staffAttendance"
+    value={staffData.staffAttendance}
+    onChange={handleChange}
+    required
+    className="form-input select-input"
+  >
+    <option value="">  Select Attendance  </option>
+    <option value="Present">Present</option>
+    <option value="Absent">Absent</option>
+    <option value="On Duty">On Duty</option>
+  </select>
+</div>
 
           <div className="form-group">
             <label>Phone Number</label>
@@ -142,6 +146,7 @@ function StaffCreation() {
         </form>
       </div>
 
+      {/* ✅ Success popup */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">

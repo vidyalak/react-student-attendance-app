@@ -7,6 +7,7 @@ import Login from "../login/Login";
 import Dashboard from "../adminDashboard/Dashboard";
 import Register from "../register/Register";
 import StaffCreation from "../staff-details/StaffCreation";
+import StaffList from "../staff-details/StaffList";
 
 function AppRoutes() {
   return (
@@ -19,7 +20,8 @@ function AppRoutes() {
 
         {/* Dashboard with nested routes */}
         <Route path="/dashboard" element={<Dashboard />}>
-          <Route path="student-creation" element={<StaffCreation />} />
+          <Route path="staff-creation" element={<StaffCreation />} />
+            <Route path="staff-list" element={<StaffList />} />
         </Route>
       </Routes>
       <Footer />

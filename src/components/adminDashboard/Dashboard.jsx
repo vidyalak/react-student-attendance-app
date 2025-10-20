@@ -28,7 +28,7 @@ function Dashboard() {
           <li onClick={() => handleSidebarClick("/dashboard/student-creation")}>
             👨‍🏫 Staff Creation
           </li>
-          <li onClick={() => handleSidebarClick("/dashboard/student-list")}>
+          <li onClick={() => handleSidebarClick("/dashboard/staff-list")}>
             🗂️ Staff List
           </li>
           <li onClick={() => handleSidebarClick("/dashboard/alumni-details")}>

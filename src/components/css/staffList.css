@@ -1,0 +1,217 @@
+/* Main Card */
+.stafflist-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px 30px;
+  width: 100%;
+  max-width: 1200px;
+  box-shadow: 0 6px 20px rgba(100, 100, 200, 0.2);
+}
+
+/* Title */
+.stafflist-title {
+  text-align: center;
+  color: #4b3fc9;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* Filter Section */
+.stafflist-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stafflist-filters input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 220px;
+  transition: 0.3s;
+}
+
+.stafflist-filters input:focus {
+  border-color: #6a5acd;
+  outline: none;
+  box-shadow: 0 0 4px rgba(106, 90, 205, 0.4);
+}
+
+.stafflist-filters button {
+  background: linear-gradient(90deg, #6a5acd, #7a6ff0);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.stafflist-filters button:hover {
+  background: linear-gradient(90deg, #5947d1, #6653f1);
+}
+
+
+/* Table Styling */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.stafflist-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.stafflist-table th,
+.stafflist-table td {
+  
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+
+.stafflist-table th {
+  background: #6a5acd;
+  color: #fff;
+  font-weight: 600;
+}
+
+.stafflist-table tr:hover {
+  background-color: #f5f4ff;
+}
+
+/* Attendance Status */
+.status.present {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.status.onduty {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-btn {
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+.action-btn.approve {
+  background-color: #28a745;
+}
+.action-btn.delete {
+  background-color: #dc3545;
+}
+.action-btn.star {
+  background-color: #ffc107;
+  color: #333;
+}
+
+/* Update Event Form */
+.update-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.update-form input {
+  width: 130px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-btn {
+  background: #6a5acd;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #574bcb;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: none;
+  background: #6a5acd;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background: #ccc;
+}
+
+/* Export Button */
+.export-section {
+  text-align: center;
+}
+
+.export-btn {
+  background: linear-gradient(90deg, #4caf50, #45a049);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.export-btn:hover {
+  background: linear-gradient(90deg, #3e8e41, #2e7d32);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stafflist-card {
+    padding: 20px;
+  }
+
+  .stafflist-filters {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stafflist-table th,
+  .stafflist-table td {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .update-form input {
+    width: 100px;
+  }
+}
