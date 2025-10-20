@@ -6,12 +6,13 @@ function StaffList() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [updatePrograms, setUpdatePrograms] = useState({});
-  const [updatingStaff, setUpdatingStaff] = useState(null); // Program submit spinner
+  const [updatingStaff, setUpdatingStaff] = useState(null);
   const [updatingAttendance, setUpdatingAttendance] = useState({
     staffNo: null,
     type: null,
-  }); // Attendance spinner
+  });
   const [toast, setToast] = useState(null);
+  const [exporting, setExporting] = useState(false); // ✅ Spinner for export button
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -21,6 +22,7 @@ function StaffList() {
     fetchStaffData(page);
   }, [page]);
 
+  // ✅ Fetch Staff Data
   const fetchStaffData = async (pageNumber = 0) => {
     setLoading(true);
     try {
@@ -38,15 +40,18 @@ function StaffList() {
     }
   };
 
-  const handleProgramChange = (staffNo, value) => {
-    setUpdatePrograms((prev) => ({ ...prev, [staffNo]: value }));
-  };
-
+  // ✅ Toast handler
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 2500);
   };
 
+  // ✅ Handle program change
+  const handleProgramChange = (staffNo, value) => {
+    setUpdatePrograms((prev) => ({ ...prev, [staffNo]: value }));
+  };
+
+  // ✅ Update Program
   const handleUpdateProgram = async (staffNo) => {
     const staffProgram = updatePrograms[staffNo];
     if (!staffProgram || staffProgram.trim() === "") {
@@ -77,7 +82,7 @@ function StaffList() {
     }
   };
 
-  // Attendance update with per-button spinner
+  // ✅ Attendance update with spinner
   const handleAttendanceUpdate = async (staffNo, type) => {
     setUpdatingAttendance({ staffNo, type });
     try {
@@ -98,7 +103,6 @@ function StaffList() {
             : staff
         )
       );
-
       showToast(`✅ Attendance for ${staffNo} marked as ${type}`, "info");
     } catch {
       showToast("❌ Error updating attendance", "error");
@@ -107,14 +111,42 @@ function StaffList() {
     }
   };
 
+  // ✅ Pagination handlers
   const handlePrev = () => {
     if (page > 0) setPage(page - 1);
   };
   const handleNext = () => {
     if (page < totalPages - 1) setPage(page + 1);
   };
-  const handleExport = () =>
-    showToast("📥 Export to Excel coming soon!", "info");
+
+  // ✅ Export to Excel
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      showToast("📦 Preparing your Excel file...", "info");
+
+      const response = await fetch("http://localhost:8080/export", {
+        method: "GET",
+      });
+      if (!response.ok) throw new Error("Failed to export data");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "staff_list.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast("✅ Excel file downloaded successfully!", "success");
+    } catch {
+      showToast("❌ Error downloading Excel file", "error");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="stafflist-page">
@@ -151,7 +183,7 @@ function StaffList() {
                     <td>{staff.dateOfRecord}</td>
                     <td>{staff.staffAttendance}</td>
 
-                    {/* Attendance buttons with per-button spinner */}
+                    {/* ✅ Attendance buttons */}
                     <td className="actions">
                       <button
                         className="action-btn approve"
@@ -206,7 +238,7 @@ function StaffList() {
                       </button>
                     </td>
 
-                    {/* Program Input */}
+                    {/* ✅ Program Input */}
                     <td>
                       <div className="update-form">
                         <input
@@ -232,7 +264,7 @@ function StaffList() {
                       </div>
                     </td>
 
-                    {/* Display Updated Program */}
+                    {/* ✅ Display Updated Program */}
                     <td>
                       <span
                         className={`program-status ${
@@ -256,7 +288,7 @@ function StaffList() {
         )}
       </div>
 
-      {/* Pagination */}
+      {/* ✅ Pagination */}
       {staffList.length > 0 && (
         <div className="pagination">
           <button onClick={handlePrev} disabled={page === 0}>
@@ -271,14 +303,18 @@ function StaffList() {
         </div>
       )}
 
-      {/* Export Section */}
+      {/* ✅ Export Section */}
       <div className="export-section">
-        <button className="export-btn" onClick={handleExport}>
-          📥 Export to Excel
+        <button
+          className="export-btn"
+          onClick={handleExport}
+          disabled={exporting}
+        >
+          {exporting ? <span className="spinner"></span> : "📥 Export to Excel"}
         </button>
       </div>
 
-      {/* Toast Notification */}
+      {/* ✅ Toast Notification */}
       {toast && <div className={`toast ${toast.type}`}>{toast.message}</div>}
     </div>
   );
