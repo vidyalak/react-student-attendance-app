@@ -8,26 +8,54 @@ function StaffList() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
 
+  // ✅ Fetch all staff (default)
   useEffect(() => {
-    const fetchStaffData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `http://localhost:8080/staff/all?page=${page}&size=${size}`
-        );
-        if (!response.ok) throw new Error("Failed to fetch staff data");
-        const data = await response.json();
-        setStaffList(data.content);
-        setTotalPages(data.totalPages);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStaffData();
   }, [page, size]);
+
+  const fetchStaffData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/staff/all?page=${page}&size=${size}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch staff data");
+      const data = await response.json();
+      setStaffList(data.content);
+      setTotalPages(data.totalPages);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Fetch staff by staff number
+  const handleSearch = async () => {
+    if (!searchInput.trim()) {
+      fetchStaffData(); // reload all if input is empty
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/staff/${searchInput.trim()}`
+      );
+      if (!response.ok) throw new Error("Staff not found!");
+      const data = await response.json();
+      setStaffList([data]); // show only the searched staff
+      setTotalPages(1);
+      setError(null);
+    } catch (err) {
+      setStaffList([]);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePrev = () => page > 0 && setPage(page - 1);
   const handleNext = () => page < totalPages - 1 && setPage(page + 1);
@@ -44,8 +72,12 @@ function StaffList() {
               type="text"
               className="filter-input"
               placeholder="Search by Staff..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className="action-btn search-btn">🔍 Search</button>
+            <button className="action-btn search-btn" onClick={handleSearch}>
+              🔍 Search
+            </button>
           </div>
 
           <div className="filter-group">
@@ -131,17 +163,19 @@ function StaffList() {
         </div>
 
         {/* Pagination */}
-        <div className="pagination">
-          <button onClick={handlePrev} disabled={page === 0}>
-            Prev
-          </button>
-          <span>
-            Page {page + 1} of {totalPages}
-          </span>
-          <button onClick={handleNext} disabled={page >= totalPages - 1}>
-            Next
-          </button>
-        </div>
+        {staffList.length > 1 && (
+          <div className="pagination">
+            <button onClick={handlePrev} disabled={page === 0}>
+              Prev
+            </button>
+            <span>
+              Page {page + 1} of {totalPages}
+            </span>
+            <button onClick={handleNext} disabled={page >= totalPages - 1}>
+              Next
+            </button>
+          </div>
+        )}
 
         {/* Export */}
         <div className="export-section">
