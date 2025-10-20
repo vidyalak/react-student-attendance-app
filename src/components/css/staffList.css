@@ -291,3 +291,62 @@
 }
 
 
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #333;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  animation: fadeInOut 2.5s ease forwards;
+  z-index: 999;
+}
+.toast.success {
+  background-color: #28a745;
+}
+.toast.error {
+  background-color: #dc3545;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(30px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(30px); }
+}
+
+/* Spinner inside button */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Updated program style */
+.program-status.updated {
+  color: #28a745;
+  font-weight: bold;
+  position: relative;
+}
+.program-status.updated::after {
+  content: "✔";
+  color: #28a745;
+  margin-left: 5px;
+  animation: pop 0.3s ease;
+}
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
