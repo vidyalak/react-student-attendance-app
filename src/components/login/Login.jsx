@@ -5,23 +5,42 @@ import "../css/login.css";
 
 function Login() {
   const navigate = useNavigate();
+
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:8080/api/login", {
-        userName,
-        passWord,
-      });
 
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/login",
+        { userName, passWord },
+        {
+          auth: {
+            username: userName,
+            password: passWord,
+          },
+        }
+      );
+
+      // ✅ Successful login
       if (response.status === 200) {
         setMessage("✅ Login successful!");
+        
+        // If backend returns token or role — store it
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
+        if (response.data.role) {
+          localStorage.setItem("role", response.data.role);
+        }
+
         setTimeout(() => navigate("/dashboard"), 1000);
       }
     } catch (error) {
+      console.error("Login error:", error);
       if (error.response && error.response.status === 401) {
         setMessage("❌ Invalid username or password");
       } else {
@@ -76,7 +95,10 @@ function Login() {
           </p>
           <p className="link-text">
             Don’t have an account?{" "}
-            <span className="redirect-link" onClick={() => navigate("/register")}>
+            <span
+              className="redirect-link"
+              onClick={() => navigate("/register")}
+            >
               Register Here
             </span>
           </p>
