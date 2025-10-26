@@ -55,12 +55,6 @@ function Register() {
       if (response.status === 200) {
         setMessage(response.data.message || "Registered successfully!");
 
-        // ✅ Store user details safely in localStorage
-        localStorage.setItem("role", formData.userRole || "");
-        localStorage.setItem("userName", formData.userName || "");
-        localStorage.setItem("firstName", formData.firstName || "");
-        localStorage.setItem("lastName", formData.lastName || "");
-
         setShowPopup(true);
       } else {
         setError("Unexpected server response.");

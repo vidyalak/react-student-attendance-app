@@ -9,53 +9,44 @@ function Login() {
   const [passWord, setPassWord] = useState("");
   const [message, setMessage] = useState("");
 
-  // ✅ Auto-fill username if coming from Register
+  // ✅ Clear previous session on load
   useEffect(() => {
-    const savedUserName = localStorage.getItem("userName");
-    // ✅ Only set if not null or "null"
-    if (savedUserName && savedUserName !== "null") {
-      setUserName(savedUserName);
-    }
+    localStorage.removeItem("userData");
   }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setMessage("🔄 Logging in...");
 
     try {
       const response = await axios.post(
         "http://localhost:8080/api/login",
         { userName, passWord },
-        { auth: { username: userName, password: passWord } }
+       {
+          auth: { username: userName, password: passWord },
+        }
       );
 
       if (response.status === 200) {
+        // ✅ Save dynamic response in localStorage
+        const { userName: uname, firstName, lastName, userEmail, userRole } = response.data;
+
+        const userData = {
+          userName: uname?.toUpperCase() || userName.toUpperCase(),
+          firstName: firstName || "Guest",
+          lastName: lastName || "",
+          userEmail: userEmail || "",
+          userRole: userRole?.toUpperCase() || "NORMALUSER",
+        };
+
+        localStorage.setItem("userData", JSON.stringify(userData));
+
         setMessage("✅ Login successful!");
-
-        // ✅ Safely read user info from localStorage
-        const role = localStorage.getItem("role") || "";
-        const firstName = localStorage.getItem("firstName") || "";
-        const lastName = localStorage.getItem("lastName") || "";
-        const username = localStorage.getItem("userName") || "";
-
-        console.log("Login Info:", { username, firstName, lastName, role });
-
-        // Store again for dashboard use
-        localStorage.setItem("role", role);
-        localStorage.setItem("firstName", firstName);
-        localStorage.setItem("lastName", lastName);
-        localStorage.setItem("userName", username);
-
-        // Redirect to dashboard
-        setTimeout(() => navigate("/dashboard"), 1000);
+        setTimeout(() => navigate("/dashboard"), 500);
       }
     } catch (error) {
       console.error("Login error:", error);
-      if (error.response && error.response.status === 401) {
-        setMessage("❌ Invalid username or password");
-      } else {
-        setMessage("⚠️ Error connecting to server");
-      }
+      setMessage(error.response?.data?.message || "❌ Invalid username or password");
     }
   };
 
@@ -64,7 +55,7 @@ function Login() {
       <div className="login-card">
         <div className="login-header">
           <h2>Welcome Back 👋</h2>
-          <p>Log in to manage students efficiently</p>
+          <p>Log in to access your dashboard</p>
         </div>
 
         <form className="login-form" onSubmit={handleLogin}>
@@ -103,10 +94,7 @@ function Login() {
           </p>
           <p className="link-text">
             Don’t have an account?{" "}
-            <span
-              className="redirect-link"
-              onClick={() => navigate("/register")}
-            >
+            <span className="redirect-link" onClick={() => navigate("/register")}>
               Register Here
             </span>
           </p>

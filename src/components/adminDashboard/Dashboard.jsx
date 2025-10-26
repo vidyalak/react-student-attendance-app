@@ -1,25 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import "../css/dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
 
-  // ✅ Safely get user info
-  const role = localStorage.getItem("role") || "";
-  const firstName = localStorage.getItem("firstName") || "";
-  const lastName = localStorage.getItem("lastName") || "";
-  const userName = localStorage.getItem("userName") || "";
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("userData"));
 
-  console.log("Dashboard Info:", { userName, firstName, lastName, role });
+    if (storedData) {
+      setUserData(storedData);
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const handleSidebarClick = (path) => navigate(path);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  if (!userData) {
+    return <h2 style={{ textAlign: "center", marginTop: "2rem" }}>Loading user data...</h2>;
+  }
+
+  const { userName, firstName, lastName, userRole } = userData;
 
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
+        <h2>MENU</h2>
         <ul>
-          {role === "ADMIN" ? (
+          {userRole === "ADMIN" && (
             <>
               <li onClick={() => handleSidebarClick("/dashboard/student-info")}>📚 Student Info</li>
               <li onClick={() => handleSidebarClick("/dashboard/profile-creation")}>👤 Profile Creation</li>
@@ -30,21 +45,29 @@ function Dashboard() {
               <li onClick={() => handleSidebarClick("/dashboard/alumni-details")}>🎓 Alumni Details</li>
               <li onClick={() => handleSidebarClick("/dashboard/attendance-history")}>📅 Attendance History</li>
             </>
-          ) : (
+          )}
+
+          {userRole === "NORMALUSER" && (
             <li onClick={() => handleSidebarClick("/dashboard/my-attendance")}>📝 My Attendance Info</li>
           )}
+
+          <li onClick={handleLogout} >
+            🔒 Logout
+          </li>
         </ul>
       </aside>
 
       <main className="dashboard-content">
         <Outlet />
-        {!window.location.pathname.includes("dashboard/") && (
-          <>
-            <h1>Welcome {firstName} {lastName}!</h1>
-            <p>Role: {role}</p>
-            <p>Select an option from the sidebar</p>
-          </>
-        )}
+        <div className="welcome-section">
+          <h1>
+            Welcome {firstName} {lastName} ({userName})! 👋
+          </h1>
+          <p>
+            ROLE: <strong>{userRole}</strong>
+          </p>
+          <p>Select an option from the sidebar to get started 🚀</p>
+        </div>
       </main>
     </div>
   );
