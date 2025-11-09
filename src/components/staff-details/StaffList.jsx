@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "../css/staffList.css";
 
 function StaffList() {
   const [staffList, setStaffList] = useState([]);
   const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
+  const [size] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,31 +21,35 @@ function StaffList() {
     type: null,
   });
 
+  // ✅ Basic Auth credentials
+  const userName = "admin";
+  const passWord = "admin123";
+
   // ✅ Load all staff initially
   useEffect(() => {
     fetchStaffData(page);
   }, [page]);
 
-  // ✅ Fetch Staff Data
+  // ✅ Fetch all staff (Paginated)
   const fetchStaffData = async (pageNumber = 0) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:8080/staff/all?page=${pageNumber}&size=${size}`
+      const response = await axios.get(
+        `http://localhost:8080/staff/all?page=${pageNumber}&size=${size}`,
+        { auth: { username: userName, password: passWord } }
       );
-      if (!response.ok) throw new Error("Failed to fetch staff data");
-      const data = await response.json();
-      setStaffList(data.content || []);
-      setTotalPages(data.totalPages || 1);
+      setStaffList(response.data.content || []);
+      setTotalPages(response.data.totalPages || 1);
       setError(null);
     } catch (err) {
-      setError("Failed to load staff data");
+      console.error("Error fetching staff data:", err);
+      setError("❌ Failed to load staff data.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch staff by number (on typing)
+  // ✅ Fetch staff by number
   const fetchStaffByNumber = async (staffNo) => {
     if (!staffNo.trim()) {
       fetchStaffData(page);
@@ -52,17 +57,16 @@ function StaffList() {
     }
     setLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:8080/staff/${staffNo.trim()}`
+      const response = await axios.get(
+        `http://localhost:8080/staff/${staffNo.trim()}`,
+        { auth: { username: userName, password: passWord } }
       );
-      if (!response.ok) throw new Error("Staff not found!");
-      const data = await response.json();
-      setStaffList([data]);
+      setStaffList([response.data]);
       setTotalPages(1);
       setError(null);
-    } catch (err) {
+    } catch {
       setStaffList([]);
-      setError(err.message);
+      setError("❌ Staff not found.");
     } finally {
       setLoading(false);
     }
@@ -76,23 +80,22 @@ function StaffList() {
     }
     setLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:8080/staff/date/${dateInput}`
+      const response = await axios.get(
+        `http://localhost:8080/staff/date/${dateInput}`,
+        { auth: { username: userName, password: passWord } }
       );
-      if (!response.ok) throw new Error("No staff found for this date!");
-      const data = await response.json();
-      setStaffList(data);
+      setStaffList(response.data || []);
       setTotalPages(1);
       setError(null);
-    } catch (err) {
+    } catch {
       setStaffList([]);
-      setError(err.message);
+      setError("❌ No staff found for this date.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Handle search typing (debounce)
+  // ✅ Debounced search
   const handleSearchInput = (e) => {
     const value = e.target.value;
     setSearchInput(value);
@@ -109,51 +112,51 @@ function StaffList() {
     setTimeout(() => setToast(null), 2500);
   };
 
-  // ✅ Handle program change
+  // ✅ Update program
   const handleProgramChange = (staffNo, value) => {
     setUpdatePrograms((prev) => ({ ...prev, [staffNo]: value }));
   };
 
-  // ✅ Update Program
   const handleUpdateProgram = async (staffNo) => {
     const staffProgram = updatePrograms[staffNo];
     if (!staffProgram || staffProgram.trim() === "") {
-      showToast("⚠️ Please enter a program!", "error");
+      showToast("⚠️ Please enter a program name", "error");
       return;
     }
 
     setUpdatingStaff(staffNo);
     try {
-      const response = await fetch(
+      const response = await axios.put(
         `http://localhost:8080/staff/updateProgram/${staffNo}?staffProgram=${encodeURIComponent(
           staffProgram
         )}`,
-        { method: "PUT" }
+        {},
+        { auth: { username: userName, password: passWord } }
       );
-      if (!response.ok) throw new Error("Failed to update");
 
-      const updatedStaff = await response.json();
+      const updatedStaff = response.data;
       setStaffList((prev) =>
         prev.map((s) => (s.staffNo === staffNo ? updatedStaff : s))
       );
       setUpdatePrograms((prev) => ({ ...prev, [staffNo]: "" }));
       showToast(`✅ ${updatedStaff.staffName}'s program updated!`, "success");
-    } catch {
+    } catch (err) {
+      console.error("Error updating program:", err);
       showToast("❌ Error updating staff program", "error");
     } finally {
       setUpdatingStaff(null);
     }
   };
 
-  // ✅ Attendance update with spinner
+  // ✅ Update attendance
   const handleAttendanceUpdate = async (staffNo, type) => {
     setUpdatingAttendance({ staffNo, type });
     try {
-      const response = await fetch(
+      await axios.put(
         `http://localhost:8080/staff/updateAttendance/${staffNo}/${type}`,
-        { method: "PUT" }
+        {},
+        { auth: { username: userName, password: passWord } }
       );
-      if (!response.ok) throw new Error("Failed to update attendance");
 
       setStaffList((prev) =>
         prev.map((staff) =>
@@ -166,46 +169,43 @@ function StaffList() {
             : staff
         )
       );
-      showToast(`✅ Attendance for ${staffNo} marked as ${type}`, "info");
-    } catch {
-      showToast("❌ Error updating attendance", "error");
+      showToast(`✅ ${staffNo} marked as ${type}`, "info");
+    } catch (err) {
+      console.error("Error updating attendance:", err);
+      showToast("❌ Failed to update attendance", "error");
     } finally {
       setUpdatingAttendance({ staffNo: null, type: null });
     }
   };
 
-  // ✅ Pagination handlers
-  const handlePrev = () => {
-    if (page > 0) setPage(page - 1);
-  };
-  const handleNext = () => {
-    if (page < totalPages - 1) setPage(page + 1);
-  };
+  // ✅ Pagination controls
+  const handlePrev = () => page > 0 && setPage(page - 1);
+  const handleNext = () => page < totalPages - 1 && setPage(page + 1);
 
-  // ✅ Export to Excel
+  // ✅ Export Excel (Fixed)
   const handleExport = async () => {
     setExporting(true);
     try {
-      showToast("📦 Preparing your Excel file...", "info");
+      showToast("📦 Preparing Excel file...", "info");
 
-      const response = await fetch("http://localhost:8080/export", {
-        method: "GET",
+      const response = await axios.get("http://localhost:8080/export", {
+        auth: { username: userName, password: passWord },
+        responseType: "blob", // ✅ this line fixes your export issue
       });
-      if (!response.ok) throw new Error("Failed to export data");
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement("a");
       a.href = url;
       a.download = "staff_list.xlsx";
       document.body.appendChild(a);
       a.click();
-      a.remove();
+      document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      showToast("✅ Excel file downloaded successfully!", "success");
-    } catch {
-      showToast("❌ Error downloading Excel file", "error");
+      showToast("✅ Excel downloaded successfully!", "success");
+    } catch (error) {
+      console.error("Export failed:", error);
+      showToast("❌ Failed to export Excel", "error");
     } finally {
       setExporting(false);
     }
@@ -216,14 +216,13 @@ function StaffList() {
       <div className="stafflist-card">
         <h2 className="stafflist-title">👨‍🏫 Staff List</h2>
 
-        {/* Filters Section */}
+        {/* ✅ Filters Section */}
         <div className="stafflist-filters">
-          {/* 🔍 Search by Staff Number */}
           <div className="filter-group">
             <input
               type="text"
               className="filter-input"
-              placeholder="Search by Staff..."
+              placeholder="Search by Staff No..."
               value={searchInput}
               onChange={handleSearchInput}
             />
@@ -235,7 +234,6 @@ function StaffList() {
             </button>
           </div>
 
-          {/* 📅 Filter by Date */}
           <div className="filter-group">
             <input
               type="date"
@@ -249,7 +247,7 @@ function StaffList() {
           </div>
         </div>
 
-        {/* Table Section */}
+        {/* ✅ Table Section */}
         <div className="table-responsive">
           {loading ? (
             <p>Loading staff data...</p>
@@ -266,8 +264,8 @@ function StaffList() {
                   <th>Date</th>
                   <th>Attendance</th>
                   <th>Actions</th>
-                  <th>Update Event</th>
-                  <th>Staff Event</th>
+                  <th>Update Program</th>
+                  <th>Program Name</th>
                 </tr>
               </thead>
               <tbody>
@@ -280,63 +278,34 @@ function StaffList() {
                       <td>{staff.staffPhNo}</td>
                       <td>{staff.dateOfRecord}</td>
                       <td>{staff.staffAttendance}</td>
-
-                      {/* ✅ Attendance buttons */}
                       <td className="actions">
-                        <button
-                          className="action-btn approve"
-                          onClick={() =>
-                            handleAttendanceUpdate(staff.staffNo, "Present")
-                          }
-                          disabled={
-                            updatingAttendance.staffNo === staff.staffNo &&
-                            updatingAttendance.type === "Present"
-                          }
-                        >
-                          {updatingAttendance.staffNo === staff.staffNo &&
-                          updatingAttendance.type === "Present" ? (
-                            <span className="spinner"></span>
-                          ) : (
-                            "✔"
-                          )}
-                        </button>
-                        <button
-                          className="action-btn delete"
-                          onClick={() =>
-                            handleAttendanceUpdate(staff.staffNo, "Absent")
-                          }
-                          disabled={
-                            updatingAttendance.staffNo === staff.staffNo &&
-                            updatingAttendance.type === "Absent"
-                          }
-                        >
-                          {updatingAttendance.staffNo === staff.staffNo &&
-                          updatingAttendance.type === "Absent" ? (
-                            <span className="spinner"></span>
-                          ) : (
-                            "✖"
-                          )}
-                        </button>
-                        <button
-                          className="action-btn star"
-                          onClick={() =>
-                            handleAttendanceUpdate(staff.staffNo, "On Duty")
-                          }
-                          disabled={
-                            updatingAttendance.staffNo === staff.staffNo &&
-                            updatingAttendance.type === "On Duty"
-                          }
-                        >
-                          {updatingAttendance.staffNo === staff.staffNo &&
-                          updatingAttendance.type === "On Duty" ? (
-                            <span className="spinner"></span>
-                          ) : (
-                            "★"
-                          )}
-                        </button>
+                        {["Present", "Absent", "On Duty"].map((type) => (
+                          <button
+                            key={type}
+                            className={`action-btn ${
+                              type === "Present"
+                                ? "approve"
+                                : type === "Absent"
+                                ? "delete"
+                                : "star"
+                            }`}
+                            onClick={() =>
+                              handleAttendanceUpdate(staff.staffNo, type)
+                            }
+                            disabled={
+                              updatingAttendance.staffNo === staff.staffNo &&
+                              updatingAttendance.type === type
+                            }
+                          >
+                            {updatingAttendance.staffNo === staff.staffNo &&
+                            updatingAttendance.type === type ? (
+                              <span className="spinner"></span>
+                            ) : (
+                              type
+                            )}
+                          </button>
+                        ))}
                       </td>
-
-                      {/* ✅ Program Input */}
                       <td>
                         <div className="update-form">
                           <input
@@ -361,8 +330,6 @@ function StaffList() {
                           </button>
                         </div>
                       </td>
-
-                      {/* ✅ Display Updated Program */}
                       <td>
                         <span
                           className={`program-status ${
@@ -401,7 +368,7 @@ function StaffList() {
           </div>
         )}
 
-        {/* ✅ Export Section */}
+        {/* ✅ Export */}
         <div className="export-section">
           <button
             className="export-btn"

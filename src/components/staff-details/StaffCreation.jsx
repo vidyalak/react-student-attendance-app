@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "../css/staffCreation.css";
 
 function StaffCreation() {
@@ -14,30 +15,48 @@ function StaffCreation() {
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
+  // ✅ Example: You can later replace this with login context or localStorage
+  const userName = "admin";
+  const passWord = "admin123";
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setStaffData({ ...staffData, [name]: value });
+    setStaffData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Frontend validation
+    if (!/^\d+$/.test(staffData.staffPhNo)) {
+      alert("⚠️ Please enter a valid numeric phone number.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/staff/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(staffData),
-      });
+      const response = await axios.post(
+        "http://localhost:8080/staff/create",
+        staffData,
+        {
+          auth: { username: userName, password: passWord },
+        }
+      );
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("✅ Staff Saved:", result);
+      if (response.status === 200 || response.status === 201) {
+        console.log("✅ Staff Saved:", response.data);
 
+        // ✅ Show success popup
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2000);
 
-        // Reset form
+        // ✅ Reset form after saving
         setStaffData({
           staffNo: "",
           staffName: "",
@@ -51,7 +70,10 @@ function StaffCreation() {
       }
     } catch (error) {
       console.error("Error while saving staff:", error);
-      alert("⚠️ Error occurred while saving staff.");
+      alert(
+        error.response?.data?.message ||
+          "⚠️ Error occurred while saving staff details."
+      );
     } finally {
       setLoading(false);
     }
@@ -111,22 +133,22 @@ function StaffCreation() {
             />
           </div>
 
-  <div className="form-group">
-  <label htmlFor="staffAttendance">Attendance</label>
-  <select
-    id="staffAttendance"
-    name="staffAttendance"
-    value={staffData.staffAttendance}
-    onChange={handleChange}
-    required
-    className="form-input select-input"
-  >
-    <option value="">  Select Attendance  </option>
-    <option value="Present">Present</option>
-    <option value="Absent">Absent</option>
-    <option value="On Duty">On Duty</option>
-  </select>
-</div>
+          <div className="form-group">
+            <label htmlFor="staffAttendance">Attendance</label>
+            <select
+              id="staffAttendance"
+              name="staffAttendance"
+              value={staffData.staffAttendance}
+              onChange={handleChange}
+              required
+              className="form-input select-input"
+            >
+              <option value="">Select Attendance</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="On Duty">On Duty</option>
+            </select>
+          </div>
 
           <div className="form-group">
             <label>Phone Number</label>
@@ -146,7 +168,7 @@ function StaffCreation() {
         </form>
       </div>
 
-      {/* ✅ Success popup */}
+      {/* ✅ Success Popup */}
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-box">

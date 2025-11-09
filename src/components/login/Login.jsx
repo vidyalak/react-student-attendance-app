@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // ✅ Professional eye icons
 import "../css/login.css";
 
 function Login() {
@@ -8,8 +9,8 @@ function Login() {
   const [userName, setUserName] = useState("");
   const [passWord, setPassWord] = useState("");
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  // ✅ Clear previous session on load
   useEffect(() => {
     localStorage.removeItem("userData");
   }, []);
@@ -22,14 +23,19 @@ function Login() {
       const response = await axios.post(
         "http://localhost:8080/api/login",
         { userName, passWord },
-       {
+        {
           auth: { username: userName, password: passWord },
         }
       );
 
       if (response.status === 200) {
-        // ✅ Save dynamic response in localStorage
-        const { userName: uname, firstName, lastName, userEmail, userRole } = response.data;
+        const {
+          userName: uname,
+          firstName,
+          lastName,
+          userEmail,
+          userRole,
+        } = response.data;
 
         const userData = {
           userName: uname?.toUpperCase() || userName.toUpperCase(),
@@ -46,7 +52,9 @@ function Login() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      setMessage(error.response?.data?.message || "❌ Invalid username or password");
+      setMessage(
+        error.response?.data?.message || "❌ Invalid username or password"
+      );
     }
   };
 
@@ -70,15 +78,21 @@ function Login() {
             <label>Username</label>
           </div>
 
-          <div className="input-group">
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={passWord}
               onChange={(e) => setPassWord(e.target.value)}
               required
               placeholder=" "
             />
             <label>Password</label>
+            <span
+              className="password-toggle1"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
           </div>
 
           <button type="submit" className="login-btn">
@@ -94,7 +108,10 @@ function Login() {
           </p>
           <p className="link-text">
             Don’t have an account?{" "}
-            <span className="redirect-link" onClick={() => navigate("/register")}>
+            <span
+              className="redirect-link"
+              onClick={() => navigate("/register")}
+            >
               Register Here
             </span>
           </p>

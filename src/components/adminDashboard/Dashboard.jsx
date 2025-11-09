@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom"; 
 import "../css/dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -32,7 +33,6 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
-        <h2>MENU</h2>
         <ul>
           {userRole === "ADMIN" && (
             <>
@@ -59,6 +59,7 @@ function Dashboard() {
 
       <main className="dashboard-content">
         <Outlet />
+         {location.pathname === "/dashboard" && (
         <div className="welcome-section">
           <h1>
             Welcome {firstName} {lastName} ({userName})! 👋
@@ -68,6 +69,7 @@ function Dashboard() {
           </p>
           <p>Select an option from the sidebar to get started 🚀</p>
         </div>
+          )}
       </main>
     </div>
   );

@@ -301,3 +301,22 @@
   border-color: #5a4fcf;
   box-shadow: 0 0 8px rgba(90, 79, 207, 0.3);
 }
+
+.password-group {
+  position: relative;
+}
+
+.password-toggle2 {
+  position: absolute;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 20px;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #000;
+}

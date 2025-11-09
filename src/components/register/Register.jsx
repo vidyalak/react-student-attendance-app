@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // ✅ Professional eye icons
 import "../css/register.css";
 
 function Register() {
@@ -17,6 +18,8 @@ function Register() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // ✅ toggle for password
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // ✅ toggle for confirm password
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,7 +57,6 @@ function Register() {
 
       if (response.status === 200) {
         setMessage(response.data.message || "Registered successfully!");
-
         setShowPopup(true);
       } else {
         setError("Unexpected server response.");
@@ -80,37 +82,97 @@ function Register() {
 
         <form className="register-form" onSubmit={handleRegister}>
           <div className="input-group">
-            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} required placeholder=" " />
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
             <label>First Name</label>
           </div>
 
           <div className="input-group">
-            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} required placeholder=" " />
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
             <label>Last Name</label>
           </div>
 
           <div className="input-group">
-            <input type="email" name="userEmail" value={formData.userEmail} onChange={handleChange} required placeholder=" " />
+            <input
+              type="email"
+              name="userEmail"
+              value={formData.userEmail}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
             <label>Email Address</label>
           </div>
 
           <div className="input-group">
-            <input type="text" name="userName" value={formData.userName} onChange={handleChange} required placeholder=" " />
+            <input
+              type="text"
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
             <label>Username</label>
           </div>
 
-          <div className="input-group">
-            <input type="password" name="passWord" value={formData.passWord} onChange={handleChange} required placeholder=" " />
+          {/* Password Field */}
+          <div className="input-group password-group">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="passWord"
+              value={formData.passWord}
+              onChange={handleChange}
+              required
+              placeholder=" "
+            />
             <label>Password</label>
+            <span
+              className="password-toggle2"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
           </div>
 
-          <div className="input-group">
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder=" " />
+          {/* Confirm Password Field */}
+          <div className="input-group password-group">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              placeholder=" "
+            />
             <label>Confirm Password</label>
+            <span
+              className="password-toggle2"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
           </div>
 
           <div className="input-group select-role-userRole">
-            <select name="userRole" value={formData.userRole} onChange={handleChange} required>
+            <select
+              name="userRole"
+              value={formData.userRole}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select Role</option>
               <option value="ADMIN">👑 Admin</option>
               <option value="NORMALUSER">🕵️ User</option>
@@ -118,14 +180,19 @@ function Register() {
             <label>Select Role</label>
           </div>
 
-          <button type="submit" className="register-btn">Register</button>
+          <button type="submit" className="register-btn">
+            Register
+          </button>
         </form>
 
         {error && <p className="error-message">{error}</p>}
         {message && <p className="success-message">{message}</p>}
 
         <p className="redirect-text">
-          Already have an account? <span className="redirect-link" onClick={() => navigate("/login")}>Login here</span>
+          Already have an account?{" "}
+          <span className="redirect-link" onClick={() => navigate("/login")}>
+            Login here
+          </span>
         </p>
       </div>
 
@@ -135,8 +202,12 @@ function Register() {
             <div className="tick-circle">✔</div>
             <h3>Registered Successfully!</h3>
             <p>{message}</p>
-            <p>Assigned Role: <strong>{formData.userRole}</strong></p>
-            <button className="ok-btn" onClick={handlePopupOk}>OK</button>
+            <p>
+              Assigned Role: <strong>{formData.userRole}</strong>
+            </p>
+            <button className="ok-btn" onClick={handlePopupOk}>
+              OK
+            </button>
           </div>
         </div>
       )}
