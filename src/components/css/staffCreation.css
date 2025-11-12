@@ -4,7 +4,9 @@
   align-items: center;
   padding: 15px;
 }
-
+.dashboard-content{
+width: 50%;
+}
 .staff-form-container {
   width: 85%;
   max-width: 360px; /* slightly smaller for better fit */

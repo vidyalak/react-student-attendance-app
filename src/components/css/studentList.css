@@ -1,0 +1,12 @@
+body {
+  background-color: #121212;
+  font-family: "Roboto", sans-serif;
+}
+
+.MuiTableCell-root {
+  color: #fff !important;
+}
+
+.MuiTableContainer-root {
+  background-color: #1e1e1e !important;
+}
