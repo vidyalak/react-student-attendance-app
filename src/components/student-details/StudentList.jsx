@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../css/staffList.css"; // ✅ reuse same styling
+import StudentAddress from "./StudentAddress"; // ✅ modal component
 
 function StudentList() {
   const [studentList, setStudentList] = useState([]);
@@ -17,7 +18,11 @@ function StudentList() {
     type: null,
   });
   const [toast, setToast] = useState(null);
-  const [exporting, setExporting] = useState(false);
+
+  // ✅ Modal state
+  const [openAddressModal, setOpenAddressModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [addressLoading, setAddressLoading] = useState(false);
 
   // ✅ Basic Auth credentials
   const userName = "admin";
@@ -35,7 +40,7 @@ function StudentList() {
         auth: { username: userName, password: passWord },
       });
       setStudentList(response.data || []);
-      setTotalPages(1); // backend doesn’t return pagination
+      setTotalPages(1);
       setError(null);
     } catch (err) {
       console.error("Error fetching student data:", err);
@@ -45,63 +50,7 @@ function StudentList() {
     }
   };
 
-  // ✅ Fetch by Roll No
-  const fetchStudentByRollNo = async (rollno) => {
-    if (!rollno.trim()) {
-      fetchStudentData(page);
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/student/${rollno.trim()}`,
-        { auth: { username: userName, password: passWord } }
-      );
-      setStudentList([response.data]);
-      setTotalPages(1);
-      setError(null);
-    } catch {
-      setStudentList([]);
-      setError("❌ Student not found.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Fetch by Date — matches controller: GET /events/by-date?date=yyyy-MM-dd
-  const fetchStudentByDate = async () => {
-    if (!dateInput) {
-      fetchStudentData(page);
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/events/by-date?date=${dateInput}`,
-        { auth: { username: userName, password: passWord } }
-      );
-      setStudentList(response.data || []);
-      setTotalPages(1);
-      setError(null);
-    } catch {
-      setStudentList([]);
-      setError("❌ No students found for this date.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Debounced search — matches controller: /student/searchStudent?name=
-  const handleSearchInput = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    if (typingTimeout) clearTimeout(typingTimeout);
-    const timeout = setTimeout(() => {
-      fetchStudentByName(value);
-    }, 500);
-    setTypingTimeout(timeout);
-  };
-
+  // ✅ Fetch by Name
   const fetchStudentByName = async (name) => {
     if (!name.trim()) {
       fetchStudentData(page);
@@ -124,13 +73,47 @@ function StudentList() {
     }
   };
 
+  // ✅ Fetch by Date
+  const fetchStudentByDate = async () => {
+    if (!dateInput) {
+      fetchStudentData(page);
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/events/by-date?date=${dateInput}`,
+        { auth: { username: userName, password: passWord } }
+      );
+      setStudentList(response.data || []);
+      setTotalPages(1);
+      setError(null);
+    } catch {
+      setStudentList([]);
+      setError("❌ No students found for this date.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Debounced search
+  const handleSearchInput = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    if (typingTimeout) clearTimeout(typingTimeout);
+    const timeout = setTimeout(() => {
+      fetchStudentByName(value);
+    }, 500);
+    setTypingTimeout(timeout);
+  };
+
   // ✅ Toast handler
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 2500);
   };
 
-  // ✅ Update Attendance — matches controller: PATCH /{rollNo}/attendance?attendanceStatus=...&dateOfRecord=...
+  // ✅ Update Attendance
   const handleAttendanceUpdate = async (rollno, type) => {
     setUpdatingAttendance({ rollno, type });
     try {
@@ -139,44 +122,57 @@ function StudentList() {
         `http://localhost:8080/${rollno}/attendance`,
         {},
         {
-          params: {
-            attendanceStatus: type,
-            dateOfRecord: date,
-          },
+          params: { attendanceStatus: type, dateOfRecord: date },
           auth: { username: userName, password: passWord },
         }
       );
-
       setStudentList((prev) =>
         prev.map((student) =>
           student.rollno === rollno
-            ? {
-                ...student,
-                attendanceStatus: type,
-                dateOfRecord: date,
-              }
+            ? { ...student, attendanceStatus: type, dateOfRecord: date }
             : student
         )
       );
       showToast(`✅ ${rollno} marked as ${type}`, "info");
-    } catch (err) {
-      console.error("Error updating attendance:", err);
+    } catch {
       showToast("❌ Failed to update attendance", "error");
     } finally {
       setUpdatingAttendance({ rollno: null, type: null });
     }
   };
 
-  // ✅ Pagination (for consistency)
+  // ✅ Pagination
   const handlePrev = () => page > 0 && setPage(page - 1);
   const handleNext = () => page < totalPages - 1 && setPage(page + 1);
+
+  const handleViewAddress = async (rollno) => {
+  setAddressLoading(true);
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/student/address?rollno=${rollno}`,
+      { auth: { username: userName, password: passWord } }
+    );
+    const addressData = response.data[0];
+    if (addressData) {
+      setSelectedAddress(addressData);
+    } else {
+      setSelectedAddress(null);
+    }
+  } catch (err) {
+    console.error("Error fetching address:", err);
+    setSelectedAddress(null);
+  } finally {
+    setAddressLoading(false);
+    setOpenAddressModal(true);
+  }
+};
 
   return (
     <div className="stafflist-page">
       <div className="stafflist-card">
         <h2 className="stafflist-title">🎓 Student List</h2>
 
-        {/* ✅ Filters Section */}
+        {/* Filters */}
         <div className="stafflist-filters">
           <div className="filter-group">
             <input
@@ -201,13 +197,16 @@ function StudentList() {
               value={dateInput}
               onChange={(e) => setDateInput(e.target.value)}
             />
-            <button className="action-btn filter-btn" onClick={fetchStudentByDate}>
+            <button
+              className="action-btn filter-btn"
+              onClick={fetchStudentByDate}
+            >
               📅 Filter
             </button>
           </div>
         </div>
 
-        {/* ✅ Table */}
+        {/* Table */}
         <div className="table-responsive">
           {loading ? (
             <p>Loading student data...</p>
@@ -225,10 +224,13 @@ function StudentList() {
                   <th>Age</th>
                   <th>Academic Year</th>
                   <th>Passed Out</th>
+                  <th>Address</th>
                   <th>Attendance</th>
                   <th>Date of Record</th>
+                  <th>Move to Alumni</th>
                 </tr>
               </thead>
+
               <tbody>
                 {studentList.length > 0 ? (
                   studentList.map((student) => (
@@ -241,12 +243,28 @@ function StudentList() {
                       <td>{student.age ?? "-"}</td>
                       <td>{student.academicYear}</td>
                       <td>{student.passedoutYear}</td>
+
+                      {/* Address Button */}
+                      <td>
+                        <button
+                          className="action-btn view"
+                          onClick={() => handleViewAddress(student.rollno)}
+                        >
+                          View
+                        </button>
+                      </td>
+
+                      {/* Attendance Buttons */}
                       <td className="actions">
-                        {["Present", "Absent"].map((type) => (
+                        {["Present", "Absent", "Onduty"].map((type) => (
                           <button
                             key={type}
                             className={`action-btn ${
-                              type === "Present" ? "approve" : "delete"
+                              type === "Present"
+                                ? "approve"
+                                : type === "Absent"
+                                ? "delete"
+                                : "onduty"
                             }`}
                             onClick={() =>
                               handleAttendanceUpdate(student.rollno, type)
@@ -265,12 +283,21 @@ function StudentList() {
                           </button>
                         ))}
                       </td>
+
                       <td>{student.dateOfRecord ?? "-"}</td>
+
+                      {/* Move to Alumni */}
+                      <td>
+                        <label className="alumni-checkbox">
+                          <input type="checkbox" />
+                          <span className="grad-icon">🎓</span>
+                        </label>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" className="no-data">
+                    <td colSpan="12" className="no-data">
                       No student records found
                     </td>
                   </tr>
@@ -280,7 +307,7 @@ function StudentList() {
           )}
         </div>
 
-        {/* ✅ Pagination */}
+        {/* Pagination */}
         {studentList.length > 0 && (
           <div className="pagination">
             <button onClick={handlePrev} disabled={page === 0}>
@@ -295,8 +322,32 @@ function StudentList() {
           </div>
         )}
 
-        {/* ✅ Toast */}
+        {/* Toast */}
         {toast && <div className={`toast ${toast.type}`}>{toast.message}</div>}
+
+        {/* Address Modal */}
+       <StudentAddress
+  isOpen={openAddressModal}
+  onClose={() => setOpenAddressModal(false)}
+  title="Student Address"
+>
+  {addressLoading ? (
+    <p>Loading address...</p>
+  ) : selectedAddress ? (
+    <div className="address-details">
+      <p><strong>Line 1:</strong> {selectedAddress.line1 || "-"}</p>
+      <p><strong>Line 2:</strong> {selectedAddress.line2 || "-"}</p>
+      <p><strong>Line 3:</strong> {selectedAddress.line3 || "-"}</p>
+      <p><strong>District:</strong> {selectedAddress.district || "-"}</p>
+      <p><strong>State:</strong> {selectedAddress.state || "-"}</p>
+      <p><strong>Country:</strong> {selectedAddress.country || "-"}</p>
+      <p><strong>Pincode:</strong> {selectedAddress.pincode || "-"}</p>
+    </div>
+  ) : (
+    <p>No address found</p>
+  )}
+</StudentAddress>
+
       </div>
     </div>
   );

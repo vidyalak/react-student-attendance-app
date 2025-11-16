@@ -117,6 +117,10 @@
 .action-btn.approve {
   background-color: #28a745;
 }
+.action-btn.view {
+  background-color: #0d78bf;
+}
+
 .action-btn.delete {
   background-color: #dc3545;
 }
@@ -348,5 +352,32 @@
 @keyframes pop {
   0% { transform: scale(0); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+
+.action-btn.onduty {
+  background-color: #f0ad4e;
+  color: #fff;
+}
+
+.action-btn.onduty:hover {
+  background-color: #ec971f;
+}
+
+.alumni-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.alumni-checkbox input[type="checkbox"] {
+  margin-right: 6px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.grad-icon {
+  font-size: 16px;
+  color: #4caf50; /* Green graduation icon */
 }
 
