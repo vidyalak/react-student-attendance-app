@@ -1,172 +1,219 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../css/staffList.css"; // ✅ reuse same styling
-import StudentAddress from "./StudentAddress"; // ✅ modal component
+import "../css/studentList.css";
+import StudentAddress from "./StudentAddress";
 
 function StudentList() {
   const [studentList, setStudentList] = useState([]);
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const [searchInput, setSearchInput] = useState("");
   const [dateInput, setDateInput] = useState("");
   const [typingTimeout, setTypingTimeout] = useState(null);
+
   const [updatingAttendance, setUpdatingAttendance] = useState({
     rollno: null,
     type: null,
   });
+
   const [toast, setToast] = useState(null);
 
-  // ✅ Modal state
+  // Address Modal
   const [openAddressModal, setOpenAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [addressLoading, setAddressLoading] = useState(false);
 
-  // ✅ Basic Auth credentials
+  // Basic Auth
   const userName = "admin";
   const passWord = "admin123";
 
+  /* ================= INITIAL LOAD ================= */
   useEffect(() => {
     fetchStudentData(page);
   }, [page]);
 
-  // ✅ Fetch all students
+  /* ================= FETCH STUDENTS (PAGINATED) ================= */
   const fetchStudentData = async (pageNumber = 0) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:8080/student/`, {
+      const response = await axios.get("http://localhost:8080/student", {
+        params: {
+          page: pageNumber,
+          size: size,
+          sortBy: "name",
+        },
         auth: { username: userName, password: passWord },
       });
-      setStudentList(response.data || []);
-      setTotalPages(1);
+
+      setStudentList(response.data.content || []);
+      setTotalPages(response.data.totalPages || 1);
       setError(null);
     } catch (err) {
-      console.error("Error fetching student data:", err);
-      setError("❌ Failed to load student data.");
+      console.error(err);
+      setError("❌ Failed to load student data");
+      setStudentList([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Fetch by Name
+  /* ================= SEARCH BY NAME ================= */
   const fetchStudentByName = async (name) => {
     if (!name.trim()) {
-      fetchStudentData(page);
+      fetchStudentData(0);
       return;
     }
+
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8080/student/searchStudent?name=${name.trim()}`,
-        { auth: { username: userName, password: passWord } }
-      );
-      setStudentList(response.data || []);
-      setTotalPages(1);
-      setError(null);
-    } catch {
-      setStudentList([]);
-      setError("❌ No matching students found.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Fetch by Date
-  const fetchStudentByDate = async () => {
-    if (!dateInput) {
-      fetchStudentData(page);
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/events/by-date?date=${dateInput}`,
-        { auth: { username: userName, password: passWord } }
-      );
-      setStudentList(response.data || []);
-      setTotalPages(1);
-      setError(null);
-    } catch {
-      setStudentList([]);
-      setError("❌ No students found for this date.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ✅ Debounced search
-  const handleSearchInput = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    if (typingTimeout) clearTimeout(typingTimeout);
-    const timeout = setTimeout(() => {
-      fetchStudentByName(value);
-    }, 500);
-    setTypingTimeout(timeout);
-  };
-
-  // ✅ Toast handler
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 2500);
-  };
-
-  // ✅ Update Attendance
-  const handleAttendanceUpdate = async (rollno, type) => {
-    setUpdatingAttendance({ rollno, type });
-    try {
-      const date = new Date().toISOString().split("T")[0];
-      await axios.patch(
-        `http://localhost:8080/${rollno}/attendance`,
-        {},
+        "http://localhost:8080/student/searchStudent",
         {
-          params: { attendanceStatus: type, dateOfRecord: date },
+          params: { name: name.trim() },
           auth: { username: userName, password: passWord },
         }
       );
+
+      setStudentList(response.data.content || []);
+      setTotalPages(response.data.totalPages || 1);
+      setPage(0);
+      setError(null);
+    } catch {
+      setStudentList([]);
+      setError("❌ No students found");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= SEARCH BY DATE ================= */
+  const fetchStudentByDate = async () => {
+    if (!dateInput) {
+      fetchStudentData(0);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.get("http://localhost:8080/events/by-date", {
+        params: { date: dateInput },
+        auth: { username: userName, password: passWord },
+      });
+
+      setStudentList(response.data || []);
+      setTotalPages(1);
+      setPage(0);
+      setError(null);
+    } catch {
+      setStudentList([]);
+      setError("❌ No students found for selected date");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= DEBOUNCED SEARCH ================= */
+  const handleSearchInput = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+    const timeout = setTimeout(() => fetchStudentByName(value), 500);
+    setTypingTimeout(timeout);
+  };
+
+  /* ================= ATTENDANCE UPDATE ================= */
+  const handleAttendanceUpdate = async (student, type) => {
+    setUpdatingAttendance({ rollno: student.rollno, type });
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:8080/${student.rollno}/attendance`,
+        student,
+        {
+          params: { attendanceStatus: type },
+          auth: { username: userName, password: passWord },
+        }
+      );
+
+      const updatedStudent = response.data;
+
       setStudentList((prev) =>
-        prev.map((student) =>
-          student.rollno === rollno
-            ? { ...student, attendanceStatus: type, dateOfRecord: date }
-            : student
+        prev.map((s) =>
+          s.rollno === updatedStudent.rollno
+            ? { ...s, attendanceStatus: updatedStudent.attendanceStatus }
+            : s
         )
       );
-      showToast(`✅ ${rollno} marked as ${type}`, "info");
+
+      showToast(`✅ ${student.rollno} marked as ${type}`, "success");
     } catch {
-      showToast("❌ Failed to update attendance", "error");
+      showToast("❌ Attendance update failed", "error");
     } finally {
       setUpdatingAttendance({ rollno: null, type: null });
     }
   };
 
-  // ✅ Pagination
+  /* ================= ADDRESS MODAL ================= */
+  const handleViewAddress = async (rollno) => {
+    setAddressLoading(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/student/address",
+        {
+          params: { rollno },
+          auth: { username: userName, password: passWord },
+        }
+      );
+      setSelectedAddress(response.data[0] || null);
+    } catch {
+      setSelectedAddress(null);
+    } finally {
+      setAddressLoading(false);
+      setOpenAddressModal(true);
+    }
+  };
+
+  /* ================= EXPORT EXCEL ================= */
+  const handleExport = async () => {
+    try {
+      showToast("📦 Preparing Excel file...", "info");
+
+      const response = await axios.get("http://localhost:8080/student/export", {
+        auth: { username: userName, password: passWord },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "student_list.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      showToast("✅ Excel downloaded successfully!", "success");
+    } catch {
+      showToast("❌ Failed to export Excel", "error");
+    }
+  };
+
+  /* ================= TOAST ================= */
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 2500);
+  };
+
+  /* ================= PAGINATION ================= */
   const handlePrev = () => page > 0 && setPage(page - 1);
   const handleNext = () => page < totalPages - 1 && setPage(page + 1);
 
-  const handleViewAddress = async (rollno) => {
-  setAddressLoading(true);
-  try {
-    const response = await axios.get(
-      `http://localhost:8080/student/address?rollno=${rollno}`,
-      { auth: { username: userName, password: passWord } }
-    );
-    const addressData = response.data[0];
-    if (addressData) {
-      setSelectedAddress(addressData);
-    } else {
-      setSelectedAddress(null);
-    }
-  } catch (err) {
-    console.error("Error fetching address:", err);
-    setSelectedAddress(null);
-  } finally {
-    setAddressLoading(false);
-    setOpenAddressModal(true);
-  }
-};
-
+  /* ================= UI ================= */
   return (
     <div className="stafflist-page">
       <div className="stafflist-card">
@@ -178,7 +225,7 @@ function StudentList() {
             <input
               type="text"
               className="filter-input"
-              placeholder="Search by Name..."
+              placeholder="Search by name..."
               value={searchInput}
               onChange={handleSearchInput}
             />
@@ -207,147 +254,127 @@ function StudentList() {
         </div>
 
         {/* Table */}
-        <div className="table-responsive">
-          {loading ? (
-            <p>Loading student data...</p>
-          ) : error ? (
-            <p className="error">{error}</p>
-          ) : (
-            <table className="stafflist-table">
-              <thead>
-                <tr>
-                  <th>Roll No</th>
-                  <th>Registration No</th>
-                  <th>Name</th>
-                  <th>Dept No</th>
-                  <th>Dept Name</th>
-                  <th>Age</th>
-                  <th>Academic Year</th>
-                  <th>Passed Out</th>
-                  <th>Address</th>
-                  <th>Attendance</th>
-                  <th>Date of Record</th>
-                  <th>Move to Alumni</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {studentList.length > 0 ? (
-                  studentList.map((student) => (
-                    <tr key={student.rollno}>
-                      <td>{student.rollno}</td>
-                      <td>{student.regno}</td>
-                      <td>{student.name}</td>
-                      <td>{student.deptcode}</td>
-                      <td>{student.deptname}</td>
-                      <td>{student.age ?? "-"}</td>
-                      <td>{student.academicYear}</td>
-                      <td>{student.passedoutYear}</td>
-
-                      {/* Address Button */}
-                      <td>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="error">{error}</p>
+        ) : (
+          <table className="stafflist-table">
+            <thead>
+              <tr>
+                <th>Roll No</th>
+                <th>Reg No</th>
+                <th>Name</th>
+                <th>Dept</th>
+                <th>Age</th>
+                <th>Academic</th>
+                <th>Passed Out</th>
+                <th>Address</th>
+                <th>Attendance</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {studentList.length > 0 ? (
+                studentList.map((s) => (
+                  <tr key={s.rollno}>
+                    <td>{s.rollno}</td>
+                    <td>{s.regno}</td>
+                    <td>{s.name}</td>
+                    <td>{s.deptname}</td>
+                    <td>{s.age ?? "-"}</td>
+                    <td>{s.academicYear}</td>
+                    <td>{s.passedoutYear}</td>
+                    <td>
+                      <button
+                        className="action-btn view"
+                        onClick={() => handleViewAddress(s.rollno)}
+                      >
+                        View
+                      </button>
+                    </td>
+                    <td className="actions">
+                      {["Present", "Absent", "On Duty"].map((type) => (
                         <button
-                          className="action-btn view"
-                          onClick={() => handleViewAddress(student.rollno)}
+                          key={type}
+                          className={`action-btn ${
+                            type === "Present"
+                              ? "approve"
+                              : type === "Absent"
+                              ? "delete"
+                              : "star"
+                          }`}
+                          disabled={
+                            updatingAttendance.rollno === s.rollno &&
+                            updatingAttendance.type === type
+                          }
+                          onClick={() => handleAttendanceUpdate(s, type)}
                         >
-                          View
+                          {type}
                         </button>
-                      </td>
-
-                      {/* Attendance Buttons */}
-                      <td className="actions">
-                        {["Present", "Absent", "Onduty"].map((type) => (
-                          <button
-                            key={type}
-                            className={`action-btn ${
-                              type === "Present"
-                                ? "approve"
-                                : type === "Absent"
-                                ? "delete"
-                                : "onduty"
-                            }`}
-                            onClick={() =>
-                              handleAttendanceUpdate(student.rollno, type)
-                            }
-                            disabled={
-                              updatingAttendance.rollno === student.rollno &&
-                              updatingAttendance.type === type
-                            }
-                          >
-                            {updatingAttendance.rollno === student.rollno &&
-                            updatingAttendance.type === type ? (
-                              <span className="spinner"></span>
-                            ) : (
-                              type
-                            )}
-                          </button>
-                        ))}
-                      </td>
-
-                      <td>{student.dateOfRecord ?? "-"}</td>
-
-                      {/* Move to Alumni */}
-                      <td>
-                        <label className="alumni-checkbox">
-                          <input type="checkbox" />
-                          <span className="grad-icon">🎓</span>
-                        </label>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="12" className="no-data">
-                      No student records found
+                      ))}
+                    </td>
+                    <td>
+                      {s.dateOfRecord
+                        ? new Date(s.dateOfRecord).toLocaleDateString("en-IN")
+                        : "-"}
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" className="no-data">
+                    No students found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
 
         {/* Pagination */}
-        {studentList.length > 0 && (
-          <div className="pagination">
-            <button onClick={handlePrev} disabled={page === 0}>
-              Prev
-            </button>
-            <span>
-              Page {page + 1} of {totalPages}
-            </span>
-            <button onClick={handleNext} disabled={page >= totalPages - 1}>
-              Next
-            </button>
-          </div>
-        )}
+        <div className="pagination">
+          <button onClick={handlePrev} disabled={page === 0}>
+            Prev
+          </button>
+          <span>
+            Page {page + 1} of {totalPages}
+          </span>
+          <button onClick={handleNext} disabled={page >= totalPages - 1}>
+            Next
+          </button>
+        </div>
+
+        {/* Export */}
+        <div className="export-section">
+          <button className="export-btn" onClick={handleExport}>
+            📥 Export to Excel
+          </button>
+        </div>
 
         {/* Toast */}
         {toast && <div className={`toast ${toast.type}`}>{toast.message}</div>}
 
         {/* Address Modal */}
-       <StudentAddress
-  isOpen={openAddressModal}
-  onClose={() => setOpenAddressModal(false)}
-  title="Student Address"
->
-  {addressLoading ? (
-    <p>Loading address...</p>
-  ) : selectedAddress ? (
-    <div className="address-details">
-      <p><strong>Line 1:</strong> {selectedAddress.line1 || "-"}</p>
-      <p><strong>Line 2:</strong> {selectedAddress.line2 || "-"}</p>
-      <p><strong>Line 3:</strong> {selectedAddress.line3 || "-"}</p>
-      <p><strong>District:</strong> {selectedAddress.district || "-"}</p>
-      <p><strong>State:</strong> {selectedAddress.state || "-"}</p>
-      <p><strong>Country:</strong> {selectedAddress.country || "-"}</p>
-      <p><strong>Pincode:</strong> {selectedAddress.pincode || "-"}</p>
-    </div>
-  ) : (
-    <p>No address found</p>
-  )}
-</StudentAddress>
-
+        <StudentAddress
+          isOpen={openAddressModal}
+          onClose={() => setOpenAddressModal(false)}
+          title="Student Address"
+        >
+          {addressLoading ? (
+            <p>Loading...</p>
+          ) : selectedAddress ? (
+            <>
+              <p>{selectedAddress.line1}</p>
+              <p>{selectedAddress.line2}</p>
+              <p>{selectedAddress.district}</p>
+              <p>{selectedAddress.state}</p>
+              <p>{selectedAddress.pincode}</p>
+            </>
+          ) : (
+            <p>No address found</p>
+          )}
+        </StudentAddress>
       </div>
     </div>
   );
