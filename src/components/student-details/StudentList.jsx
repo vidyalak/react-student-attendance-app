@@ -33,7 +33,9 @@ function StudentList() {
 
   /* ================= INITIAL LOAD ================= */
   useEffect(() => {
-    fetchStudentData(page);
+    if (!searchInput) {
+      fetchStudentData(page);
+    }
   }, [page]);
 
   /* ================= FETCH STUDENTS (PAGINATED) ================= */
@@ -61,9 +63,10 @@ function StudentList() {
     }
   };
 
-  /* ================= SEARCH BY NAME ================= */
+  /* ================= SEARCH BY NAME (FIXED) ================= */
   const fetchStudentByName = async (name) => {
     if (!name.trim()) {
+      setPage(0);
       fetchStudentData(0);
       return;
     }
@@ -78,11 +81,13 @@ function StudentList() {
         }
       );
 
-      setStudentList(response.data.content || []);
-      setTotalPages(response.data.totalPages || 1);
+      // ✅ backend returns List<Student>
+      setStudentList(response.data || []);
+      setTotalPages(1); // not paginated
       setPage(0);
       setError(null);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStudentList([]);
       setError("❌ No students found");
     } finally {
@@ -122,7 +127,11 @@ function StudentList() {
     setSearchInput(value);
 
     if (typingTimeout) clearTimeout(typingTimeout);
-    const timeout = setTimeout(() => fetchStudentByName(value), 500);
+
+    const timeout = setTimeout(() => {
+      fetchStudentByName(value);
+    }, 500);
+
     setTypingTimeout(timeout);
   };
 
@@ -334,13 +343,16 @@ function StudentList() {
 
         {/* Pagination */}
         <div className="pagination">
-          <button onClick={handlePrev} disabled={page === 0}>
+          <button onClick={handlePrev} disabled={page === 0 || searchInput}>
             Prev
           </button>
           <span>
             Page {page + 1} of {totalPages}
           </span>
-          <button onClick={handleNext} disabled={page >= totalPages - 1}>
+          <button
+            onClick={handleNext}
+            disabled={page >= totalPages - 1 || searchInput}
+          >
             Next
           </button>
         </div>
