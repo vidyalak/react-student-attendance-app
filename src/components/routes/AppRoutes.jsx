@@ -9,6 +9,7 @@ import Register from "../register/Register";
 import StaffCreation from "../staff-details/StaffCreation";
 import StaffList from "../staff-details/StaffList";
 import StudentList from "../student-details/StudentList";
+import Profile from "../profile-creation/Profile";
 
 function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ function AppRoutes() {
           <Route path="staff-creation" element={<StaffCreation />} />
             <Route path="staff-list" element={<StaffList />} />
             <Route path="student-info" element={<StudentList />} />
+             <Route path="profile-creation" element={<Profile />} />
         </Route>
       </Routes>
       <Footer />
