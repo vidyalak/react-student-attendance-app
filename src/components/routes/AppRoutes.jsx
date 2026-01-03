@@ -10,6 +10,8 @@ import StaffCreation from "../staff-details/StaffCreation";
 import StaffList from "../staff-details/StaffList";
 import StudentList from "../student-details/StudentList";
 import Profile from "../profile-creation/Profile";
+import EventCreation from "../event-details/EventCreation";
+import Event from "../event-details/Event";
 
 function AppRoutes() {
   return (
@@ -23,9 +25,11 @@ function AppRoutes() {
         {/* Dashboard with nested routes */}
         <Route path="/dashboard" element={<Dashboard />}>
           <Route path="staff-creation" element={<StaffCreation />} />
-            <Route path="staff-list" element={<StaffList />} />
-            <Route path="student-info" element={<StudentList />} />
-             <Route path="profile-creation" element={<Profile />} />
+          <Route path="staff-list" element={<StaffList />} />
+          <Route path="student-info" element={<StudentList />} />
+          <Route path="profile-creation" element={<Profile />} />
+          <Route path="event-creation" element={<EventCreation />} />
+          <Route path="event" element={<Event />} />
         </Route>
       </Routes>
       <Footer />
