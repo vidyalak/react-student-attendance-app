@@ -12,6 +12,8 @@ import StudentList from "../student-details/StudentList";
 import Profile from "../profile-creation/Profile";
 import EventCreation from "../event-details/EventCreation";
 import Event from "../event-details/Event";
+import AttendanceHistory from "../attendance-details/AttendanceHistory";
+import AlumniDetails from "../alumni-details/AlumniDetails";
 
 function AppRoutes() {
   return (
@@ -30,9 +32,11 @@ function AppRoutes() {
           <Route path="profile-creation" element={<Profile />} />
           <Route path="event-creation" element={<EventCreation />} />
           <Route path="event" element={<Event />} />
+          <Route path="attendance-history" element={<AttendanceHistory />} />     
+          <Route path="alumni-details" element={<AlumniDetails />} />
         </Route>
       </Routes>
-      <Footer />
+      <Footer />////
     </Router>
   );
 }

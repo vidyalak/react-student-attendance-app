@@ -1,0 +1,73 @@
+.alumni-page {
+  padding: 30px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.table-container {
+  overflow-x: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.alumni-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.alumni-table thead {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.alumni-table th,
+.alumni-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.alumni-table th {
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.alumni-table tbody tr:hover {
+  background-color: #f1f7ff;
+}
+
+.alumni-table td {
+  font-size: 14px;
+  color: #333;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #888;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #555;
+}
+
+.error {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: red;
+}
