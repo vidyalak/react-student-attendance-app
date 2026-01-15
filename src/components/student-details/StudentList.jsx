@@ -95,6 +95,27 @@ function StudentList() {
     }
   };
 
+  /* ================= MOVE TO ALUMNI ================= */
+  const handleMoveToAlumni = async (rollno) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/alumni/moveToAlumni/${rollno}`,
+        {},
+        { auth: { username: userName, password: passWord } }
+      );
+
+      // Remove student from UI
+      setStudentList((prev) =>
+        prev.filter((student) => student.rollno !== rollno)
+      );
+
+      showToast(response.data || "Moved to Alumni and removed from Student table");
+    } catch {
+      showToast("❌ Failed to move student to Alumni", "error");
+    }
+  };
+
+
   /* ================= SEARCH BY DATE ================= */
   const fetchStudentByDate = async () => {
     if (!dateInput) {
@@ -281,6 +302,7 @@ function StudentList() {
                 <th>Address</th>
                 <th>Attendance</th>
                 <th>Date</th>
+                 <th>Movie To Alumni</th>
               </tr>
             </thead>
             <tbody>
@@ -327,6 +349,15 @@ function StudentList() {
                       {s.dateOfRecord
                         ? new Date(s.dateOfRecord).toLocaleDateString("en-IN")
                         : "-"}
+                    </td>
+                     <td className="alumni-col">
+                      <button
+                        className="alumni-btn"
+                        title="Move to Alumni"
+                        onClick={() => handleMoveToAlumni(s.rollno)}
+                      >
+                        🎓
+                      </button>
                     </td>
                   </tr>
                 ))
