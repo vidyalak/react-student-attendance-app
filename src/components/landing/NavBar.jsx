@@ -2,45 +2,52 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../css/navbar.css";
 
-function Navbar() {
+const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user data exists in localStorage
     const userData = JSON.parse(localStorage.getItem("userData"));
-    if (userData) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setIsLoggedIn(!!userData);
   }, []);
 
   return (
-    <nav className="navbar">
-      <div className="navbar-inner container">
-        <h1 className="navbar-title">🎓 Student Attendance</h1>
+    <header className="navbar">
+      <div className="nav-container">
         
-        {/* Hamburger for Mobile */}
-        <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+        {/* Logo */}
+        <div className="logo">
+          <span className="logo-icon">🎓</span>
+          <span className="logo-text">StudentManage</span>
+        </div>
+
+        {/* Hamburger (Mobile) */}
+        <div
+          className={`hamburger ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           <span></span>
           <span></span>
           <span></span>
         </div>
 
-        <ul className={`navbar-menu ${menuOpen ? "active" : ""}`}>
-          <li><Link to="/" className="nav-link">Home</Link></li>
-          <li><Link to="/about" className="nav-link">About</Link></li>
-          <li><Link to="/gallery" className="nav-link">Gallery</Link></li>
+        {/* Navigation Links */}
+        <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
+          <Link to="/">Dashboard</Link>
+          <Link to="/courses">Courses</Link>
+          <Link to="/events">Events</Link>
+          <Link to="/contact">Contact</Link>
+        </nav>
 
-          {/* ✅ Hide Login when logged in */}
-          {!isLoggedIn && (
-            <li><Link to="/login" className="nav-link">Login</Link></li>
-          )}
-        </ul>
+        {/* Desktop Sign In Button */}
+        {!isLoggedIn && (
+          <Link to="/login" className="sign-in-btn desktop-only">
+            Sign In
+          </Link>
+        )}
       </div>
-    </nav>
+    </header>
   );
-}
+};
 
 export default Navbar;
